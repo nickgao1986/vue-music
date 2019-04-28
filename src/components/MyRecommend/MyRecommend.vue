@@ -55,5 +55,19 @@ export default {
 <style lang="scss" scoped>
 @import '~@/common/scss/const.scss';
 @import '~@/common/scss/mymixin.scss';
-
+.my-recommend {
+  position: fixed;
+  width: 100%;
+  top: 88px;
+  bottom: 0;
+  .recommend-content {
+    height: 100%;
+    overflow: hidden;
+    .slide-wrapper {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+  }
+}
 </style>

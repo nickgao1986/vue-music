@@ -44,10 +44,34 @@ export default{
   mounted() {
     setTimeout(() => {
       this._setSliderWidth()
+      this._initDots()
       this._initSlider()
+
+      // 当窗口尺寸改变时，重新计算轮播宽度
+      window.addEventListener('resize', () => {
+        if (!this.slider) {
+          return
+        }
+        this._setSliderWidth(true)
+        this.slider.refresh()
+      })
     }, 20)
   },
   methods: {
+    // 初始化轮播点
+    _initDots () {
+      this.dots = new Array(this.children.length)
+    },
+    // 自动播放
+    _initPlay () {
+      let nextIndex = this.currentDotsIndex + 1
+      if (this.loop) {
+        nextIndex += 1
+      }
+      this.timer = setTimeout(() => {
+        this.slider.goToPage(nextIndex, 0, 400)
+      }, this.delay)
+    },
     _setSliderWidth (isResize) {
       // 拿到传过来的图片
       this.children = this.$refs.sliderGroup.children
@@ -56,7 +80,7 @@ export default{
       // 拿到父元素（slider）宽度
       let width = 0
       let sliderWidth = this.$refs.slider.clientWidth
-
+      console.log('length', this.children.length)
       // 动态添加 class、width
       for (let i = 0; i < this.children.length; i++) {
         let child = this.children[i]
@@ -83,7 +107,28 @@ export default{
         snapThreshold: 0.3,
         snapSpeed: 400
       })
+      if (this.autoPlay) {
+        this._initPlay()
+      }
+
+      this.slider.on('scrollEnd', () => {
+        let nowIndex = this.slider.getCurrentPage().pageX
+        // 循环模式下 -1
+        if (this.loop) {
+          nowIndex -= 1
+        }
+        this.currentDotsIndex = nowIndex
+
+        if (this.autoPlay) {
+          clearTimeout(this.timer)
+          this._initPlay()
+        }
+      })
     }
+  },
+  destroyed () {
+    // 良好的习惯：销毁定时器
+    clearTimeout(this.timer)
   }
 }
 </script>
@@ -112,6 +157,27 @@ export default{
       img {
         display: block;
         width: 100%
+      }
+    }
+  }
+  .dots {
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 12px;
+    text-align: center;
+    font-size: 0;
+    .dot {
+      display: inline-block;
+      margin: 0 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $color-text-l;
+      &.active {
+        width: 20px;
+        border-radius: 5px;
+        background: $color-text-ll;
       }
     }
   }
