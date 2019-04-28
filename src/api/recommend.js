@@ -40,6 +40,7 @@ export function getList() {
     params: data
   })
   .then(function(response) {
+    console.log('aaa', response)
     return Promise.resolve(response.data)
   })
   .catch(function(error) {
