@@ -45,7 +45,6 @@ export default {
     // 当首次获取到图片时，Better-scroll 重新计算
     loadImg () {
       if (!this.flag) {
-        this.$refs.scroll.refresh()
         this.flag = true
       }
     }
